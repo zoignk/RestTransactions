@@ -35,7 +35,7 @@ public interface TransactionsService {
     @PUT
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response putTransactionInArray(Long transaction_id,TransactionBean transaction);
+    public Response putTransactionInMap(Long transaction_id,TransactionBean transaction);
     
     
 }

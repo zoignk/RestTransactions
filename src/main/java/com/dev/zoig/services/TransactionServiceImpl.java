@@ -106,7 +106,7 @@ public class TransactionServiceImpl implements TransactionsService{
     @Path("/add/{transaction_id}")
     @Consumes({MediaType.APPLICATION_JSON}) 
     @Produces({MediaType.APPLICATION_JSON}) 
-    public Response putTransactionInArray(@PathParam("transaction_id")Long transaction_id, TransactionBean transaction) {
+    public Response putTransactionInMap(@PathParam("transaction_id")Long transaction_id, TransactionBean transaction) {
         //TODO: Check for duplicate keys
         transactionMap.put(transaction_id, transaction); 
         return Response.status(200).type(MediaType.APPLICATION_JSON).build();
