@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.codehaus.jettison.json.JSONArray;
 
 /**
  *
@@ -26,56 +27,101 @@ import javax.ws.rs.core.MediaType;
 @Path("/transactionservice")
 public class TransactionServiceImpl implements TransactionsService{
 
-    Map<Long,TransactionBean> transactionMap = new HashMap<>();
+    public static final Map<Long,TransactionBean> transactionMap = new HashMap<>();
     
-        public Map<Long, TransactionBean> getTransactionList() {
-        return transactionMap;
-    }
-    
+    /**
+     *
+     * Returns transaction for specified transaction_id in JSON format.
+     * 
+     * @param transaction_id
+     * @return
+     */
     @Override
     @GET
     @Path("transaction/{transaction_id}")
     @Produces({MediaType.APPLICATION_JSON}) 
     public TransactionBean getTransactionById(@PathParam("transaction_id")Long transaction_id) {
-        transactionMap.put(1l, new TransactionBean(54.56, "Type1", 1l));
+        
         return transactionMap.get(transaction_id);
     }
 
+    /**
+     *
+     * Returns every transaction of specified type. Using JSONArray to show how
+     * to convert any Collection to JSON format.
+     * 
+     * @param type
+     * @return
+     */
     @Override
     @GET
     @Path("types/{type}")
     @Produces({MediaType.APPLICATION_JSON}) 
-    public List<Long> getTransactionsByType(@PathParam("type")String type) {
+    public JSONArray getTransactionsByType(@PathParam("type")String type) {
+
         List<Long> listResult = new ArrayList<>();
         for (Long key : transactionMap.keySet()) {
             if(transactionMap.get(key).getType().equalsIgnoreCase(type))
                 listResult.add(key);
         }
-        return listResult;
+        
+        JSONArray arrayResult = new JSONArray(listResult);
+        return arrayResult;
     }
 
+    /**
+     *
+     * Finds every transaction with specified parent_id and calculates sum for
+     * amounts.
+     * 
+     * @param transaction_id
+     * @return
+     */
     @Override
     @GET
     @Path("sum/{transaction_id}")
     @Produces({MediaType.APPLICATION_JSON}) 
-    public Double getSumByParentId(@PathParam("transaction_id")Long transaction_id) {
+    public String getSumByParentId(@PathParam("transaction_id")Long transaction_id) {
+        transactionMap.put(1l, new TransactionBean(54.56, "Type1", 1l));
+        transactionMap.put(2l, new TransactionBean(54.56, "Type1", 1l));
         Double sum = 0.0;
         for (Long key : transactionMap.keySet()) {
-            if(transactionMap.get(key).getParent_id() == transaction_id)
+            if(transactionMap.get(key).getParent_id().equals(transaction_id))
                 sum += transactionMap.get(key).getAmount();
         }
-        return sum;
+        return"{\"sum\":"+sum+"}";
     }
             
-
-
+    /**
+     *
+     * Adding new transaction to map.
+     * 
+     * 
+     * @param transaction_id
+     * @param transaction
+     * @return
+     */
     @Override
-    @POST
-    @Path("/add")
+    @PUT
+    @Path("/add/{transaction_id}")
     @Consumes({MediaType.APPLICATION_JSON}) 
     @Produces({MediaType.APPLICATION_JSON}) 
-    public void putTransactionInArray( TransactionBean transaction) {
-        transactionMap.put(2l, transaction);
+    public Response putTransactionInArray(@PathParam("transaction_id")Long transaction_id, TransactionBean transaction) {
+        //TODO: Check for duplicate keys
+        transactionMap.put(transaction_id, transaction); 
+        return Response.status(200).type(MediaType.APPLICATION_JSON).build();
+    }
+    
+    public static void initMap() {
+        
+        TransactionBean firstTransaction = new TransactionBean(150.50, "insurance", 1L);
+        TransactionServiceImpl.transactionMap.put(1L, firstTransaction);
+        TransactionBean secondTransaction = new TransactionBean(20.00, "insurance", 1L);
+        TransactionServiceImpl.transactionMap.put(2L, secondTransaction);
+        TransactionBean thirdTransaction = new TransactionBean(1000.25, "car", 1L);
+        TransactionServiceImpl.transactionMap.put(3L, thirdTransaction);
+        TransactionBean fourthTransaction = new TransactionBean(122.32, "car", 1L);
+        TransactionServiceImpl.transactionMap.put(4L, fourthTransaction);
     }
     
     

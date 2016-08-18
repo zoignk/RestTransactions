@@ -1,6 +1,8 @@
 
 package com.dev.zoig.resttransactions;
 
+import com.dev.zoig.beans.TransactionBean;
+import com.dev.zoig.services.TransactionServiceImpl;
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -34,6 +36,7 @@ public class Main {
     
     protected static HttpServer startServer() throws IOException {
         ResourceConfig resourceConfig = new PackagesResourceConfig("com.dev.zoig.services");
+        // enables JAVA to JSON automatic mapping
         resourceConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
 
         System.out.println("Starting grizzly2...");
@@ -43,10 +46,13 @@ public class Main {
     public static void main(String[] args) throws IOException {
         // Grizzly 2 initialization
         HttpServer httpServer = startServer();
+        TransactionServiceImpl.initMap();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...",
                 BASE_URI));
         System.in.read();
         httpServer.stop();
-    }    
+    } 
+    
+    
 }

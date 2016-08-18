@@ -5,6 +5,7 @@
  */
 package com.dev.zoig.beans;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -56,6 +57,31 @@ public class TransactionBean {
     public void setParent_id(Long parent_id) {
         this.parent_id = parent_id;
     }
+
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TransactionBean other = (TransactionBean) obj;
+        if (!Objects.equals(this.amount, other.amount)) {
+            return false;
+        }
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        if (!Objects.equals(this.parent_id, other.parent_id)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
     
     
 }

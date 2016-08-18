@@ -1,11 +1,14 @@
 
 package com.dev.zoig.resttransactions;
 
+import com.dev.zoig.beans.TransactionBean;
+import com.dev.zoig.services.TransactionServiceImpl;
 import org.glassfish.grizzly.http.server.HttpServer;
 
 import com.sun.jersey.core.header.MediaTypes;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.core.Response;
 import junit.framework.TestCase;
 
 
@@ -23,6 +26,8 @@ public class MainTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
+        TransactionServiceImpl.initMap();
+        
         //start the Grizzly2 web container 
         httpServer = Main.startServer();
 
@@ -38,22 +43,14 @@ public class MainTest extends TestCase {
         httpServer.stop();
     }
 
-    /**
-     * Test to see that the message "Got it!" is sent in the response.
+    
+     /**
+     * Test to see that transactionMap contains transaction with transaction_id = 1
      */
-    public void testMyResource() {
-        String responseMsg = r.path("myresource").get(String.class);
-        assertEquals("Got it!", responseMsg);
+    public void testGetById() {
+        TransactionBean responseTransaction = r.path("transactionservice/transaction/1").get(TransactionBean.class);
+        assertTrue(TransactionServiceImpl.transactionMap.containsValue(responseTransaction));
     }
+    
 
-    /**
-     * Test if a WADL document is available at the relative path
-     * "application.wadl".
-     */
-    public void testApplicationWadl() {
-        String serviceWadl = r.path("application.wadl").
-                accept(MediaTypes.WADL).get(String.class);
-                
-        assertTrue(serviceWadl.length() > 0);
-    }
 }
